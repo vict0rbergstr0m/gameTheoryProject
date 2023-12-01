@@ -10,10 +10,12 @@ class VillageGameBoard:
 
     def __init__(self, harvest_factor = 0.1,
                 raid_factor = 0.8,
+                max_raid_value = 2,
                 trade_factor = 0.2) -> None:
         
         self.harvest_factor = harvest_factor;
         self.raid_factor = raid_factor;
+        self.max_raid_value = max_raid_value;
         self.trade_factor = trade_factor;
 
     def get_board_states(self, resources) -> list[np.ndarray]:
@@ -53,7 +55,9 @@ class VillageGameBoard:
     def harvest_raid(self, resources) -> np.ndarray:
         out = np.array([0,0]);
 
+        max_raid_value = self.max_raid_value * resources[1];
         raid_value = resources[0] * self.raid_factor;
+        raid_value = __smooth_Max__(raid_value, max_raid_value);
 
         out[0] = -raid_value;
         out[1] = raid_value;
@@ -76,15 +80,31 @@ class VillageGameBoard:
     def raid_raid(self, resources) -> np.ndarray:
         out = np.array([0,0]);
 
-        out[0] = -resources[0] * self.raid_factor + resources[1] * self.raid_factor;
-        out[1] = -resources[1] * self.raid_factor + resources[0] * self.raid_factor;
+        max_raid_value = [self.max_raid_value * resources[0], # you cant gain more than max_raid_value*your_resources
+                            self.max_raid_value * resources[1]];
+        
+        raid_gain = [resources[1] * self.raid_factor, #you gain the opponent_resources*raid_factor 
+                        resources[0] * self.raid_factor];
+
+        raid_gain = np.array([__smooth_Max__(raid_gain[0], max_raid_value[0]), #the gain is clamped to max_raid_value*your_resources
+                        __smooth_Max__(raid_gain[1], max_raid_value[1])]);
+
+        raid_loss = np.array([-raid_gain[1], #you lose what the opponent gains
+                        -raid_gain[0]]);
+
+        raid_value = raid_gain + raid_loss; #sum of gains and losses
+
+        out[0] = raid_value[0];
+        out[1] = raid_value[1];
 
         return out;
 
     def raid_trade(self, resources) -> np.ndarray:
         out = np.array([0,0]);
 
+        max_raid_value = self.max_raid_value * resources[0];
         raid_value = resources[1] * self.raid_factor;
+        raid_value = __smooth_Max__(raid_value, max_raid_value);
 
         out[0] = raid_value;
         out[1] = -raid_value;
@@ -103,4 +123,11 @@ class VillageGameBoard:
         out[0] = resources[1]*self.trade_factor;
         out[1] = resources[0]*self.trade_factor;
 
-        return out
+        return out;
+    
+
+def __smooth_Max__(value, max_value) -> float:
+    if value < 0:
+        return value;
+    #todo: its hard writing a soft max, i give up 
+    return min(value, max_value);

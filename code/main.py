@@ -9,19 +9,20 @@ class Moves(Enum):
     trade = 2;
 
 
-#TODO: raiding is way to strong when the resources are low, make the max raid reward some multiplier of your own resources
+#TODO: problem, the game never ends, no player wins when random. idk why...
 
-n_rounds = 100;
+n_rounds = 50;
 
 harvest_factor = 0.1;
 raid_factor = 0.8;
+max_raid_value = 2;
 trade_factor = 0.2;
 
-start_res_1 = 1000;
-start_res_2 = 1000;
+start_res_1 = 10;
+start_res_2 = 10;
 
 resources = np.array([start_res_1, start_res_2]);
-gameBoard = VillageGameBoard(harvest_factor, raid_factor, trade_factor);
+gameBoard = VillageGameBoard(harvest_factor, raid_factor, max_raid_value, trade_factor);
 
 def get_game(resources) -> nash.Game:
     state = gameBoard.get_board_states(resources);
@@ -29,9 +30,9 @@ def get_game(resources) -> nash.Game:
     print(game);
     return game
 
-
+print("\n\n===========Start============")
 for i in range(n_rounds):
-    print("Round " + str(i+1) + str(resources));
+    print("\n\n-------Round " + str(i+1) + " " + str(resources) + "--------\n");
     game = get_game(resources);
 
     actions = [np.random.randint(3), np.random.randint(3)]; # 0 = harvest, 1 = raid, 2 = trade
