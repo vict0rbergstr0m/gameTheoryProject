@@ -1,2 +1,10 @@
-./.vscode
-.pyc
+# Python
+*.pyc
+*.pyo
+__pycache__/
+venv/
+.env
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
