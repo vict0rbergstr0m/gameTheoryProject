@@ -8,14 +8,17 @@ class VillageGameBoard:
     should give a higher harvest yield for example...
     """
 
+    #todo: write a general, get_raid_value function, that takes resources as input
     def __init__(self, harvest_factor = 0.1,
                 raid_factor = 0.8,
                 max_raid_value = 2,
+                raid_cost = 0.1,
                 trade_factor = 0.2) -> None:
         
         self.harvest_factor = harvest_factor;
         self.raid_factor = raid_factor;
         self.max_raid_value = max_raid_value;
+        self.raid_cost = raid_cost;
         self.trade_factor = trade_factor;
 
     def get_board_states(self, resources) -> list[np.ndarray]:
@@ -59,6 +62,10 @@ class VillageGameBoard:
         raid_value = resources[0] * self.raid_factor;
         raid_value = __smooth_Max__(raid_value, max_raid_value);
 
+        raid_cost = -self.raid_cost * resources[1]; #you use some of your_resources to raid
+
+        raid_value = raid_value + raid_cost;
+
         out[0] = -raid_value;
         out[1] = raid_value;
 
@@ -92,7 +99,10 @@ class VillageGameBoard:
         raid_loss = np.array([-raid_gain[1], #you lose what the opponent gains
                         -raid_gain[0]]);
 
-        raid_value = raid_gain + raid_loss; #sum of gains and losses
+        raid_cost = np.array([-self.raid_cost * resources[0], #you use some of your_resources to raid
+                                -self.raid_cost * resources[1]]);
+
+        raid_value = raid_gain + raid_loss + raid_cost; #sum of gains and losses
 
         out[0] = raid_value[0];
         out[1] = raid_value[1];
@@ -105,6 +115,11 @@ class VillageGameBoard:
         max_raid_value = self.max_raid_value * resources[0];
         raid_value = resources[1] * self.raid_factor;
         raid_value = __smooth_Max__(raid_value, max_raid_value);
+
+        raid_cost = -self.raid_cost * resources[0]; #you use some of your_resources to raid
+
+        raid_value = raid_value + raid_cost;
+
 
         out[0] = raid_value;
         out[1] = -raid_value;
@@ -124,7 +139,8 @@ class VillageGameBoard:
         out[1] = resources[0]*self.trade_factor;
 
         return out;
-    
+
+
 
 def __smooth_Max__(value, max_value) -> float:
     if value < 0:
