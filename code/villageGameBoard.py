@@ -1,9 +1,16 @@
 import numpy as np;
 
 class VillageGameBoard:
-    def __init__(self, harvest_factor = 1.1,
+    """
+    This class contains the rules of the game,
+    it can be reused for getting the rewards of different players.
+    You will only need different GameBoards if e.g. some regions of the "map"
+    should give a higher harvest yield for example...
+    """
+
+    def __init__(self, harvest_factor = 0.1,
                 raid_factor = 0.8,
-                trade_factor = 0.5) -> None:
+                trade_factor = 0.2) -> None:
         
         self.harvest_factor = harvest_factor;
         self.raid_factor = raid_factor;
