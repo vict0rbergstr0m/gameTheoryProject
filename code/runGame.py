@@ -2,7 +2,6 @@ import pygame
 import sys
 import numpy as np
 from game import *
-import nashpy as nash
 
 BACKGROUND_COLOR = (200,200,200);
 BOARD_COLOR = (255,255,255);
@@ -11,6 +10,9 @@ square_size = 84;
 square_spacing = 96;
 
 font_size = 32
+
+game_tick = 0.5;
+fps = 60;
 
 
 class GameRunner:
@@ -26,7 +28,8 @@ class GameRunner:
         self.font = pygame.font.Font(None, font_size)
 
     def run(self):
-        village_game = Game(0.1, 0.8, 2, 0.1, 0.2, 100, 100);
+        village_game = Game(0.5, 0.8, 2, 0.1, 0.2, 100, 100);
+        update_game_timer = game_tick;
 
         while True:
             for event in pygame.event.get():
@@ -37,16 +40,18 @@ class GameRunner:
             (game, resources) = village_game.get_round();
 
             utilities = [game.payoff_matrices[0], game.payoff_matrices[1]];
-            # Fill the background color
-            self.screen.fill(BACKGROUND_COLOR);
 
+            self.screen.fill(BACKGROUND_COLOR);
             self.__plot_matchup__(utilities, resources);
 
             pygame.display.flip();
 
-            pygame.time.Clock().tick(10);
+            pygame.time.Clock().tick(fps);
+            update_game_timer -= 1/fps;
 
-            village_game.run(game);
+            if update_game_timer <= 0:
+                village_game.run(game);
+                update_game_timer = game_tick;
 
     def __plot_matchup__(self, utilities: list[np.ndarray], resources: np.ndarray):
 
@@ -63,12 +68,13 @@ class GameRunner:
         number_text = self.font.render('Resources: '+str(resources[1]), True, (0, 0, 0));
         number_rect = number_text.get_rect(center=board1_corner + np.array([64, -32]));
         self.screen.blit(number_text, number_rect);
+
     def __draw_board__(self, origin: np.ndarray, utilities: np.ndarray):
         for i in range(3):
             for j in range(3):
                 rect = pygame.draw.rect(self.screen, BOARD_COLOR, (origin[0]+square_spacing*i, origin[1]+square_spacing*j, square_size, square_size));
 
-                number_text = self.font.render(str(utilities[i,j]), True, (0, 0, 0));
+                number_text = self.font.render(str(utilities[j,i]), True, (0, 0, 0));
                 number_rect = number_text.get_rect(center=rect.center);
                 self.screen.blit(number_text, number_rect);
 

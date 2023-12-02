@@ -46,7 +46,7 @@ class Game:
 if __name__ == "__main__":
     n_rounds = 10;
 
-    harvest_factor = 0.1;
+    harvest_factor = 0.5;
     raid_factor = 0.8;
     raid_cost = 0.1;
     max_raid_value = 2;
@@ -57,5 +57,5 @@ if __name__ == "__main__":
 
     game = Game(harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, start_res_1, start_res_2);
     for i in range(n_rounds):
-        round = game.get_round();
+        (round,_) = game.get_round();
         game.run(round)
