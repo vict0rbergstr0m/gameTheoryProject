@@ -4,7 +4,7 @@ import nashpy as nash
 from strategies import *
 
 class Game:
-    def __init__(self, harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, start_res_1, start_res_2):
+    def __init__(self, harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, start_res_1, start_res_2, strategies: list = [NashStrategy(), NashStrategy()]):
         self.harvest_factor = harvest_factor
         self.raid_factor = raid_factor
         self.max_raid_value = max_raid_value
@@ -14,16 +14,16 @@ class Game:
         self.start_res_2 = start_res_2
         self.resources = np.array([start_res_1, start_res_2])
         self.gameBoard = VillageGameBoard(harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor)
+        self.strategies = strategies;
+        self.prev_actions = np.array([-1,-1])
 
 
     def get_round(self) -> tuple[nash.Game, np.ndarray]:
         return (self.get_game(self.resources), self.resources)
 
     def run(self, game) -> list[np.ndarray]:
-            
-        #TODO: these strategies should not be hard coded... use custom for player 1 and two
-        actions = [NashStrategy.get_action(game, 0),
-                    NashStrategy.get_action(game, 1)];
+        actions = [self.strategies[0].get_action(game, 0,self.prev_actions),
+                    self.strategies[1].get_action(game, 1,self.prev_actions)];
 
         utility = np.array([game.payoff_matrices[0][actions[0],actions[1]],game.payoff_matrices[1][actions[0],actions[1]]]);
         self.resources = self.resources + utility
@@ -32,6 +32,7 @@ class Game:
         print("player 2 played: " + str(actions[1]));
         print("\n\n\n");
 
+        self.prev_actions = actions.copy()
         return actions;
 
     def get_game(self, resources) -> nash.Game:
