@@ -21,6 +21,8 @@ class Game:
     def run(self, game) -> list[np.ndarray]:
         #game = self.get_game(self.resources)
 
+
+        #TODO: all this should be inside a strategy class? each player should be assigned/choose a strategy class that takes the "game" and returns a action "0,1,2"
         equilibria = game.support_enumeration();
         eq_sum = np.array([[1/10,1/10,1/10],[1/10,1/10,1/10]]) #default probabilities, 0 will give error....
         for eq in equilibria:
@@ -32,7 +34,7 @@ class Game:
         available_actions = [0, 1, 2]
         actions = [np.random.choice(available_actions, p=eq_sum[0]),  #choose action based on probabilities of sum of nash equilibria
                     np.random.choice(available_actions, p=eq_sum[1])]; # 0 = harvest, 1 = raid, 2 = trade
-        
+        #TODO: --end
         
         utility = np.array([game.payoff_matrices[0][actions[0],actions[1]],game.payoff_matrices[1][actions[0],actions[1]]]);
         self.resources = self.resources + utility
