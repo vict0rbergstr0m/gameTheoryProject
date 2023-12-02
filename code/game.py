@@ -18,7 +18,7 @@ class Game:
     def get_round(self) -> tuple[nash.Game, np.ndarray]:
         return (self.get_game(self.resources), self.resources)
 
-    def run(self, game):
+    def run(self, game) -> list[np.ndarray]:
         #game = self.get_game(self.resources)
 
         equilibria = game.support_enumeration();
@@ -37,7 +37,14 @@ class Game:
         utility = np.array([game.payoff_matrices[0][actions[0],actions[1]],game.payoff_matrices[1][actions[0],actions[1]]]);
         self.resources = self.resources + utility
 
+        print("\nplayer 1 played: " + str(actions[0]));
+        print("player 2 played: " + str(actions[1]));
+        print("\n\n\n");
+
+        return actions;
+
     def get_game(self, resources) -> nash.Game:
+        print("resources: " + str(resources))
         state = self.gameBoard.get_board_states(resources)
         game = nash.Game(state[0], state[1])
         print(game)
