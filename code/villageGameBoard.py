@@ -64,10 +64,10 @@ class VillageGameBoard:
 
         raid_cost = -self.raid_cost * resources[1]; #you use some of your_resources to raid
 
-        raid_value = raid_value + raid_cost;
+        #raid_value = raid_value + raid_cost;
 
         out[0] = -raid_value;
-        out[1] = raid_value;
+        out[1] = raid_value + raid_cost;
 
         return out;
 
@@ -118,10 +118,9 @@ class VillageGameBoard:
 
         raid_cost = -self.raid_cost * resources[0]; #you use some of your_resources to raid
 
-        raid_value = raid_value + raid_cost;
+        #raid_value = raid_value + raid_cost;
 
-
-        out[0] = raid_value;
+        out[0] = raid_value + raid_cost;
         out[1] = -raid_value;
 
         return out;
