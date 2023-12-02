@@ -56,11 +56,11 @@ class GameRunner:
         self.__draw_board__(board0_corner, utilities[0]);
         self.__draw_board__(board1_corner, utilities[1]);
     
-        number_text = self.font.render(str(resources[0]), True, (0, 0, 0));
+        number_text = self.font.render('Resources: '+str(resources[0]), True, (0, 0, 0));
         number_rect = number_text.get_rect(center=board0_corner + np.array([64, -32]));
         self.screen.blit(number_text, number_rect);
     
-        number_text = self.font.render(str(resources[1]), True, (0, 0, 0));
+        number_text = self.font.render('Resources: '+str(resources[1]), True, (0, 0, 0));
         number_rect = number_text.get_rect(center=board1_corner + np.array([64, -32]));
         self.screen.blit(number_text, number_rect);
     def __draw_board__(self, origin: np.ndarray, utilities: np.ndarray):
@@ -72,5 +72,6 @@ class GameRunner:
                 number_rect = number_text.get_rect(center=rect.center);
                 self.screen.blit(number_text, number_rect);
 
-game = GameRunner();
-game.run();
+if __name__ == "__main__":
+    game = GameRunner();
+    game.run();

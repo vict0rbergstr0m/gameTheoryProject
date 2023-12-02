@@ -50,8 +50,8 @@ class VillageGameBoard:
     def harvest_harvest(self, resources: np.ndarray) -> np.ndarray:
         out = np.array([0,0]);
 
-        out[0] = resources[0]*self.harvest_factor;
-        out[1] = resources[1]*self.harvest_factor;
+        out[0] = max(1,resources[0]*self.harvest_factor);
+        out[1] = max(1,resources[1]*self.harvest_factor);
 
         return out;
 
@@ -79,7 +79,7 @@ class VillageGameBoard:
 
         trade_value =  0;
 
-        out[0] = resources[0]*self.harvest_factor;
+        out[0] = max(1,resources[0]*self.harvest_factor);
         out[1] = trade_value;
 
         return out;
