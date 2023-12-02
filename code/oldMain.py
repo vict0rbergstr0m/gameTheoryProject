@@ -1,15 +1,6 @@
 from villageGameBoard import VillageGameBoard;
 import numpy as np;
 import nashpy as nash
-from enum import Enum
-
-class Moves(Enum):
-    harvest = 0;
-    raid = 1;
-    trade = 2;
-
-
-#TODO: problem, both players slowly trickle down into nothing....
 
 n_rounds = 1000;
 
