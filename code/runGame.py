@@ -2,6 +2,7 @@ import pygame
 import sys
 import numpy as np
 from game import *
+from strategies import *
 
 BACKGROUND_COLOR = (3,15,19);
 BOARD_COLOR = (79,109,122);
@@ -29,10 +30,13 @@ class GameRunner:
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT));
         pygame.display.set_caption("Village Game");
     
-        self.font = pygame.font.Font(None, font_size)
+        self.font = pygame.font.Font(None, font_size);
 
     def run(self):
-        village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 100, 100);
+
+        strategies = [NashStrategy(), NashStrategy()];
+
+        village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 100, 100, strategies);
         update_game_timer = game_tick;
 
         (game, resources) = village_game.get_round();
