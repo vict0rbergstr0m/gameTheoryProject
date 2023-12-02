@@ -61,18 +61,18 @@ class GameRunner:
 
     def __plot_matchup__(self, utilities: list[np.ndarray], resources: np.ndarray, action: list[np.ndarray]):
 
-        board0_corner = np.array([64,64]);
-        board1_corner = np.array([square_spacing*6 + 64,64]);
+        board0_corner = np.array([128,128]);
+        board1_corner = np.array([square_spacing*6 + 128,128]);
 
         self.__draw_board__(board0_corner, utilities[0], action);
         self.__draw_board__(board1_corner, utilities[1], action);
     
         number_text = self.font.render('Resources: '+str(resources[0]), True, (0, 0, 0));
-        number_rect = number_text.get_rect(center=board0_corner + np.array([64, -32]));
+        number_rect = number_text.get_rect(center=board0_corner + np.array([64, -64]));
         self.screen.blit(number_text, number_rect);
     
         number_text = self.font.render('Resources: '+str(resources[1]), True, (0, 0, 0));
-        number_rect = number_text.get_rect(center=board1_corner + np.array([64, -32]));
+        number_rect = number_text.get_rect(center=board1_corner + np.array([64, -64]));
         self.screen.blit(number_text, number_rect);
 
     def __draw_board__(self, origin: np.ndarray, utilities: np.ndarray, action: list[np.ndarray]):
@@ -80,8 +80,6 @@ class GameRunner:
             for j in range(3):
                 
                 color = BOARD_COLOR;
-                if j == action[0] and i == action[1]:
-                    color = (0,255,0);
 
                 rect = pygame.draw.rect(self.screen, color, (origin[0]+square_spacing*i, origin[1]+square_spacing*j, square_size, square_size));
 
@@ -98,9 +96,26 @@ class GameRunner:
                     (rect_corner[0] + square_size, rect_corner[1] + square_size),
                 ]
 
-                # Draw the triangles
-                pygame.draw.polygon(self.screen, (0,255,0), triangle1)
-                pygame.draw.polygon(self.screen, (0,0,255), triangle2)
+                # Draw actions
+                color1 = (0,0,0);
+                color2 = (0,0,0);
+                if action[0] == 0:
+                    color1 = HARVEST_COLOR;
+                if action[0] == 1:
+                    color1 = RAID_COLOR;
+                if action[0] == 2:
+                    color1 = TRADE_COLOR;
+
+                if action[1] == 0:
+                    color2 = HARVEST_COLOR;
+                if action[1] == 1:
+                    color2 = RAID_COLOR;
+                if action[1] == 2:
+                    color2 = TRADE_COLOR;
+
+                if j == action[0] and i == action[1]:
+                    pygame.draw.polygon(self.screen, color1, triangle1)
+                    pygame.draw.polygon(self.screen, color2, triangle2)
 
                 number_text = self.font.render(str(utilities[j,i]), True, (0, 0, 0));
                 number_rect = number_text.get_rect(center=rect.center);
