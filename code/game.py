@@ -1,6 +1,7 @@
 from villageGameBoard import VillageGameBoard
 import numpy as np
 import nashpy as nash
+from strategies import *
 
 class Game:
     def __init__(self, harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, start_res_1, start_res_2):
@@ -19,23 +20,11 @@ class Game:
         return (self.get_game(self.resources), self.resources)
 
     def run(self, game) -> list[np.ndarray]:
-        #game = self.get_game(self.resources)
+            
+        #TODO: these strategies should not be hard coded... use custom for player 1 and two
+        actions = [NashStrategy.get_action(game, 0),
+                    NashStrategy.get_action(game, 1)];
 
-
-        #TODO: all this should be inside a strategy class? each player should be assigned/choose a strategy class that takes the "game" and returns a action "0,1,2"
-        equilibria = game.support_enumeration();
-        eq_sum = np.array([[1/10,1/10,1/10],[1/10,1/10,1/10]]) #default probabilities, 0 will give error....
-        for eq in equilibria:
-            eq_sum[0] = eq_sum[0] + eq[0]; #sum all nash equilibria
-            eq_sum[1] = eq_sum[1] + eq[1];
-        eq_sum[0] = eq_sum[0]/(eq_sum[0][0]+eq_sum[0][1]+eq_sum[0][2]);
-        eq_sum[1] = eq_sum[1]/(eq_sum[1][0]+eq_sum[1][1]+eq_sum[1][2]);
-
-        available_actions = [0, 1, 2]
-        actions = [np.random.choice(available_actions, p=eq_sum[0]),  #choose action based on probabilities of sum of nash equilibria
-                    np.random.choice(available_actions, p=eq_sum[1])]; # 0 = harvest, 1 = raid, 2 = trade
-        #TODO: --end
-        
         utility = np.array([game.payoff_matrices[0][actions[0],actions[1]],game.payoff_matrices[1][actions[0],actions[1]]]);
         self.resources = self.resources + utility
 
