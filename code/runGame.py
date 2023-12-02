@@ -3,12 +3,12 @@ import sys
 import numpy as np
 from game import *
 
-BACKGROUND_COLOR = (200,200,200);
-BOARD_COLOR = (255,255,255);
+BACKGROUND_COLOR = (3,15,19);
+BOARD_COLOR = (79,109,122);
 
-RAID_COLOR = (255,0,0);
-HARVEST_COLOR = (0,255,0);
-TRADE_COLOR = (0,0,255);
+RAID_COLOR = (144,50,61);
+HARVEST_COLOR = (194,128,52);
+TRADE_COLOR = (217,202,179);
 
 square_size = 84;
 square_spacing = 96;
@@ -69,11 +69,11 @@ class GameRunner:
     
 
         #draw player resources
-        number_text = self.font.render('Resources: '+str(resources[0]), True, (0, 0, 0));
+        number_text = self.font.render('Resources: '+str(resources[0]), True, (255, 255, 255));
         number_rect = number_text.get_rect(center=board0_corner + np.array([64, -64]));
         self.screen.blit(number_text, number_rect);
     
-        number_text = self.font.render('Resources: '+str(resources[1]), True, (0, 0, 0));
+        number_text = self.font.render('Resources: '+str(resources[1]), True, (255, 255, 255));
         number_rect = number_text.get_rect(center=board1_corner + np.array([64, -64]));
         self.screen.blit(number_text, number_rect);
     
