@@ -67,6 +67,8 @@ class GameRunner:
         self.__draw_board__(board0_corner, utilities[0], action);
         self.__draw_board__(board1_corner, utilities[1], action);
     
+
+        #draw player resources
         number_text = self.font.render('Resources: '+str(resources[0]), True, (0, 0, 0));
         number_rect = number_text.get_rect(center=board0_corner + np.array([64, -64]));
         self.screen.blit(number_text, number_rect);
@@ -74,6 +76,64 @@ class GameRunner:
         number_text = self.font.render('Resources: '+str(resources[1]), True, (0, 0, 0));
         number_rect = number_text.get_rect(center=board1_corner + np.array([64, -64]));
         self.screen.blit(number_text, number_rect);
+    
+
+        #draw action names
+
+        # player 1
+        #columns
+        action_text = self.font.render(('Harvest'), True, HARVEST_COLOR);
+        action_rect = action_text.get_rect(center=board0_corner + np.array([40, -24]));
+        self.screen.blit(action_text, action_rect);
+    
+        action_text = self.font.render(('Raid'), True, RAID_COLOR);
+        action_rect = action_text.get_rect(center=board0_corner + np.array([40 + square_spacing, -24]));
+        self.screen.blit(action_text, action_rect);
+
+        action_text = self.font.render(('Trade'), True, TRADE_COLOR);
+        action_rect = action_text.get_rect(center=board0_corner + np.array([40 + square_spacing*2, -24]));
+        self.screen.blit(action_text, action_rect);
+    
+        #rows
+        action_text = self.font.render(('Harvest'), True, HARVEST_COLOR);
+        action_rect = action_text.get_rect(center=board0_corner + np.array([-64, square_spacing/2]));
+        self.screen.blit(action_text, action_rect);
+    
+        action_text = self.font.render(('Raid'), True, RAID_COLOR);
+        action_rect = action_text.get_rect(center=board0_corner + np.array([-64, square_spacing/2 + square_spacing]));
+        self.screen.blit(action_text, action_rect);
+
+        action_text = self.font.render(('Trade'), True, TRADE_COLOR);
+        action_rect = action_text.get_rect(center=board0_corner + np.array([-64, square_spacing/2 + square_spacing*2]));
+        self.screen.blit(action_text, action_rect);
+
+        # player 2
+        #columns
+        action_text = self.font.render(('Harvest'), True, HARVEST_COLOR);
+        action_rect = action_text.get_rect(center=board1_corner + np.array([40, -24]));
+        self.screen.blit(action_text, action_rect);
+    
+        action_text = self.font.render(('Raid'), True, RAID_COLOR);
+        action_rect = action_text.get_rect(center=board1_corner + np.array([40 + square_spacing, -24]));
+        self.screen.blit(action_text, action_rect);
+
+        action_text = self.font.render(('Trade'), True, TRADE_COLOR);
+        action_rect = action_text.get_rect(center=board1_corner + np.array([40 + square_spacing*2, -24]));
+        self.screen.blit(action_text, action_rect);
+    
+        #rows
+        action_text = self.font.render(('Harvest'), True, HARVEST_COLOR);
+        action_rect = action_text.get_rect(center=board1_corner + np.array([-64, square_spacing/2]));
+        self.screen.blit(action_text, action_rect);
+    
+        action_text = self.font.render(('Raid'), True, RAID_COLOR);
+        action_rect = action_text.get_rect(center=board1_corner + np.array([-64, square_spacing/2 + square_spacing]));
+        self.screen.blit(action_text, action_rect);
+
+        action_text = self.font.render(('Trade'), True, TRADE_COLOR);
+        action_rect = action_text.get_rect(center=board1_corner + np.array([-64, square_spacing/2 + square_spacing*2]));
+        self.screen.blit(action_text, action_rect);
+
 
     def __draw_board__(self, origin: np.ndarray, utilities: np.ndarray, action: list[np.ndarray]):
         for i in range(3):
