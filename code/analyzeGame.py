@@ -10,6 +10,7 @@ BOARD_COLOR = (79,109,122);
 RAID_COLOR = (144,50,61);
 HARVEST_COLOR = (194,128,52);
 TRADE_COLOR = (217,202,179);
+NASH_COLOR = (0, 160, 30);
 square_size = 84;
 square_spacing = 96;
 
@@ -120,7 +121,7 @@ class GameAnalyzer:
                     prev_action = village_game.run(game);
                     update_game_timer = game_tick;
 
-
+        
         
     def __plot_matchup__(self, utilities: list[np.ndarray], resources: np.ndarray, action: list[np.ndarray]):
 
@@ -140,9 +141,23 @@ class GameAnalyzer:
         number_rect = number_text.get_rect(center=board1_corner + np.array([64, -64]));
         self.screen.blit(number_text, number_rect);
     
-
+        #Draw Nash
+        
+        game = nash.Game(utilities[0],utilities[1])
+        print(game)
+        equilibria = game.support_enumeration();
+        for eq in equilibria:
+            print(eq)
+            i = eq[0].tolist().index(1);
+            j = eq[1].tolist().index(1);
+            circ_pos1= (board0_corner[0]+square_size/2 + square_spacing*(i), board0_corner[1]+square_size/2+square_spacing*(j));
+            pygame.draw.circle(self.screen, NASH_COLOR,circ_pos1,square_size*2/(3*np.sqrt(2)),4)
+            circ_pos2= (board1_corner[0]+square_size/2 + square_spacing*(i), board1_corner[1]+square_size/2+square_spacing*(j));
+            pygame.draw.circle(self.screen, NASH_COLOR,circ_pos2,square_size*2/(3*np.sqrt(2)),4)
+        
+        
         #draw action names
-
+        
         # player 1
         #columns
         action_text = self.font.render(('Harvest'), True, HARVEST_COLOR);
@@ -196,6 +211,7 @@ class GameAnalyzer:
         action_text = self.font.render(('Trade'), True, TRADE_COLOR);
         action_rect = action_text.get_rect(center=board1_corner + np.array([-64, square_spacing/2 + square_spacing*2]));
         self.screen.blit(action_text, action_rect);
+        
 
 
     def __draw_board__(self, origin: np.ndarray, utilities: np.ndarray, action: list[np.ndarray]):
