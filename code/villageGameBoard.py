@@ -20,6 +20,7 @@ class VillageGameBoard:
         self.max_raid_value = max_raid_value;
         self.raid_cost = raid_cost;
         self.trade_factor = trade_factor;
+        self.max_harvest = 1000;
 
     def get_board_states(self, resources) -> list[np.ndarray]:
         board_states = [np.zeros((3, 3)),np.zeros((3, 3))] # Create 2 3x3 arrays as game board states
@@ -50,8 +51,8 @@ class VillageGameBoard:
     def harvest_harvest(self, resources: np.ndarray) -> np.ndarray:
         out = np.array([0,0]);
 
-        out[0] = max(1,resources[0]*self.harvest_factor);
-        out[1] = max(1,resources[1]*self.harvest_factor);
+        out[0] = min(self.max_harvest,max(1,resources[0]*self.harvest_factor));
+        out[1] = min(self.max_harvest,max(1,resources[1]*self.harvest_factor));
 
         return out;
 
@@ -62,7 +63,7 @@ class VillageGameBoard:
         raid_value = resources[0] * self.raid_factor;
         raid_value = __smooth_Max__(raid_value, max_raid_value);
 
-        raid_cost = -self.raid_cost * resources[1]; #you use some of your_resources to raid
+        raid_cost = max(-self.raid_cost * resources[1], -0.5*resources[0]); #you use some of your_resources to raid, but max cost is half of opponent_resources
 
         #raid_value = raid_value + raid_cost;
 
@@ -79,7 +80,7 @@ class VillageGameBoard:
 
         trade_value =  0;
 
-        out[0] = max(1,resources[0]*self.harvest_factor);
+        out[0] = min(self.max_harvest,max(1,resources[0]*self.harvest_factor));
         out[1] = trade_value;
 
         return out;
@@ -99,8 +100,8 @@ class VillageGameBoard:
         raid_loss = np.array([-raid_gain[1], #you lose what the opponent gains
                         -raid_gain[0]]);
 
-        raid_cost = np.array([-self.raid_cost * resources[0], #you use some of your_resources to raid
-                                -self.raid_cost * resources[1]]);
+        raid_cost = np.array([max(-self.raid_cost * resources[0], -0.5*resources[1]), #you use some of your_resources to raid, but max cost is half of opponent_resources
+                                max(-self.raid_cost * resources[1], -0.5*resources[0])]);
 
         raid_value = raid_gain + raid_loss + raid_cost; #sum of gains and losses
 
@@ -116,7 +117,7 @@ class VillageGameBoard:
         raid_value = resources[1] * self.raid_factor;
         raid_value = __smooth_Max__(raid_value, max_raid_value);
 
-        raid_cost = -self.raid_cost * resources[0]; #you use some of your_resources to raid
+        raid_cost = max(-self.raid_cost * resources[0], -0.5*resources[1]); #you use some of your_resources to raid
 
         #raid_value = raid_value + raid_cost;
 
