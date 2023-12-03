@@ -21,7 +21,7 @@ dead_value = 5;
 
 font_size = 16
 
-game_tick = 0.5;
+game_tick = 0.0;
 fps = 60;
 
 class Player:
@@ -48,7 +48,7 @@ class WorldGame:
 
         pygame.init();
 
-        self.WIDTH, self.HEIGHT = 1280, 720;
+        self.WIDTH, self.HEIGHT = 1440, 1440;
 
         # Create the Pygame screen
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT));
@@ -58,7 +58,8 @@ class WorldGame:
     
         self.players: list[Player] = [];
 
-        possible_strategies = [HarvestStrategy, RaidStrategy, TradeStrategy, NashStrategy];
+        possible_strategies = [HarvestStrategy, RaidStrategy, TradeStrategy, NashStrategy, PacifistStrategy];
+        #possible_strategies = [HarvestStrategy];
 
         for i in range(n_players):
             position = (np.random.randint(0, self.WIDTH), np.random.randint(0, self.HEIGHT));
@@ -183,10 +184,15 @@ class WorldGame:
             self.__draw_player__(player)
 
     def __draw_player__(self, player: Player):
-        pygame.draw.circle(self.screen, player.color, (player.position[0], player.position[1]), np.sqrt(player.resources)/2+4);
-        text = self.font.render(player.strategy.__class__.__name__, True, player.color)  # Render the text
-        text_rect = text.get_rect(center=(player.position[0], player.position[1] - 20))  # Set the position of the text
-        self.screen.blit(text, text_rect)  # Draw the text on the screen
+        size = player.resources/(10000+player.resources)*50 + 4;
+        pygame.draw.circle(self.screen, player.color, (player.position[0], player.position[1]), size);
+        text_color = (255,255,255);
+        if player.dead:
+            text_color = (0,0,0);
+
+        text = self.font.render(player.strategy.__class__.__name__, True, text_color); # Render the text
+        text_rect = text.get_rect(center=(player.position[0], player.position[1] - 20));  # Set the position of the text
+        self.screen.blit(text, text_rect);  # Draw the text on the screen
 
     def __draw_paths__(self, player: Player):
         start_pos = player.position;
@@ -195,5 +201,5 @@ class WorldGame:
             pygame.draw.line(self.screen, TRADE_COLOR, start_pos, end_pos, 5);
 
 if __name__ == "__main__":
-    game = WorldGame(50, 250, 1000);
+    game = WorldGame(100, 250, 1000);
     game.run()

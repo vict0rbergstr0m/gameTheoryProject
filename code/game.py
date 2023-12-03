@@ -3,6 +3,8 @@ import numpy as np
 import nashpy as nash
 from strategies import *
 
+resources_max = 1000000;
+
 class Game:
     def __init__(self, harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, start_res_1, start_res_2, strategies: list = [NashStrategy(), NashStrategy()]):
         self.harvest_factor = harvest_factor
@@ -22,17 +24,19 @@ class Game:
         return (self.get_game(self.resources), self.resources)
 
     def run(self, game) -> list[np.ndarray]:
-        actions = [self.strategies[0].get_action(game, 0,self.prev_actions),
-                    self.strategies[1].get_action(game, 1,self.prev_actions)];
+        actions = [self.strategies[0].get_action(game,self.prev_actions),
+                    self.strategies[1].get_action(game,self.prev_actions)];
 
         utility = np.array([game.payoff_matrices[0][actions[0],actions[1]],game.payoff_matrices[1][actions[0],actions[1]]]);
 
         self.resources_history = np.vstack((self.resources_history, self.resources.copy()));
 
-        self.resources = self.resources + utility
+        if (self.resources + utility).sum() < resources_max:
+            self.resources = self.resources + utility
+        
 
-        print("\nplayer 1 played: " + str(actions[0]));
-        print("player 2 played: " + str(actions[1]));
+        print("\n" + self.strategies[0].__class__.__name__+  " 1 played: " + str(actions[0]));
+        print(self.strategies[0].__class__.__name__+  " 2 played: " + str(actions[1]));
         print("\n\n\n");
 
         self.prev_actions = actions.copy()
