@@ -3,6 +3,8 @@ import numpy as np
 import nashpy as nash
 from strategies import *
 
+resources_max = 1000000;
+
 class Game:
     def __init__(self, harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, start_res_1, start_res_2, strategies: list = [NashStrategy(), NashStrategy()]):
         self.harvest_factor = harvest_factor
@@ -29,7 +31,9 @@ class Game:
 
         self.resources_history = np.vstack((self.resources_history, self.resources.copy()));
 
-        self.resources = self.resources + utility
+        if (self.resources + utility).sum() < resources_max:
+            self.resources = self.resources + utility
+        
 
         print("\n" + self.strategies[0].__class__.__name__+  " 1 played: " + str(actions[0]));
         print(self.strategies[0].__class__.__name__+  " 2 played: " + str(actions[1]));
