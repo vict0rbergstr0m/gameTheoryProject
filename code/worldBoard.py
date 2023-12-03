@@ -184,9 +184,13 @@ class WorldGame:
 
     def __draw_player__(self, player: Player):
         pygame.draw.circle(self.screen, player.color, (player.position[0], player.position[1]), np.sqrt(player.resources)/2+4);
-        text = self.font.render(player.strategy.__class__.__name__, True, player.color)  # Render the text
-        text_rect = text.get_rect(center=(player.position[0], player.position[1] - 20))  # Set the position of the text
-        self.screen.blit(text, text_rect)  # Draw the text on the screen
+        text_color = (255,255,255);
+        if player.dead:
+            text_color = (0,0,0);
+
+        text = self.font.render(player.strategy.__class__.__name__, True, text_color); # Render the text
+        text_rect = text.get_rect(center=(player.position[0], player.position[1] - 20));  # Set the position of the text
+        self.screen.blit(text, text_rect);  # Draw the text on the screen
 
     def __draw_paths__(self, player: Player):
         start_pos = player.position;
