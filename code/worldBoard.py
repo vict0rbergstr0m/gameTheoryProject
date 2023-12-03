@@ -58,7 +58,7 @@ class WorldGame:
     
         self.players: list[Player] = [];
 
-        possible_strategies = [HarvestStrategy, RaidStrategy, TradeStrategy, NashStrategy];
+        possible_strategies = [HarvestStrategy, RaidStrategy, TradeStrategy, NashStrategy, PacifistStrategy];
 
         for i in range(n_players):
             position = (np.random.randint(0, self.WIDTH), np.random.randint(0, self.HEIGHT));
