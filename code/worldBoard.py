@@ -21,7 +21,7 @@ dead_value = 5;
 
 font_size = 32
 
-game_tick = 0.0;
+game_tick = 0.5;
 fps = 60;
 
 class Player:
@@ -79,7 +79,7 @@ class WorldGame:
 
             closest_neighbor: tuple[float, Player] = (np.inf, players[0]);
             for player2 in players:
-                if player1 == player2 or player1.neighbors.__contains__(player2) or player2.dead:
+                if player1.position == player2.position or player1.neighbors.__contains__(player2) or player2.dead:
                     continue;
 
                 if self.__get_distance__(player1, player2) <= self.always_neighbors_distance:
@@ -118,20 +118,20 @@ class WorldGame:
             if update_game_timer <= 0:
 
                 #loop trough a list of players (sorted in order of resources descending)
-                self.players = sorted(self.players, key=lambda player: player.resources);
+                self.players = sorted(self.players, key=lambda player: player.resources, reverse=True);
                 #the players will each get one turn to play a round against (one or all) neighbors?
                 for player in self.players:
                     if player.dead:
                         continue;
 
                     #set up a single round game
+                    player.neighbors = sorted(player.neighbors, key=lambda neighbor: neighbor.resources, reverse=True);
                     opponent = player.neighbors[np.random.randint(0, len(player.neighbors))];
                     if opponent.dead:
                         for neighbor in player.neighbors:
                             if not neighbor.dead:
                                 opponent = neighbor;
                                 break;
-
 
                     game = Game(harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, player.resources, opponent.resources, [player.strategy, opponent.strategy]);
                     (game_round, _) = game.get_round();
