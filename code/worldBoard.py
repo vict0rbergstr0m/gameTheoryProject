@@ -57,9 +57,12 @@ class WorldGame:
         self.font = pygame.font.Font(None, font_size);
     
         self.players: list[Player] = [];
-        for _ in range(n_players):
+        for i in range(n_players):
             position = (np.random.randint(0, self.WIDTH), np.random.randint(0, self.HEIGHT));
-            self.players.append(Player(PLAYER_COLOR, np.random.randint(min_resources, max_resources), position, NashStrategy()));
+            if i%2==0:
+                self.players.append(Player(PLAYER_COLOR, np.random.randint(min_resources, max_resources), position, HarvestStrategy()));
+            else:
+                self.players.append(Player(PLAYER_COLOR, np.random.randint(min_resources, max_resources), position, NashStrategy()));
     
         self.__build_neighbors__(self.players);
 
@@ -95,6 +98,10 @@ class WorldGame:
             if len(player1.neighbors) == 0:
                 player1.neighbors.append(closest_neighbor[1]);
                 closest_neighbor[1].neighbors.append(player1);
+    
+            for neighbor in player1.neighbors:#UGH WHY DOES IT KEEP ADDING ITSELF!???
+                if neighbor.position == player1.position:
+                    player1.neighbors.remove(neighbor);
 
     def __get_distance__(self, player1: Player, player2: Player):
         return np.sqrt((player1.position[0] - player2.position[0])**2 + (player1.position[1] - player2.position[1])**2)
@@ -116,6 +123,15 @@ class WorldGame:
             update_game_timer -= 1/fps;
 
             if update_game_timer <= 0:
+
+                alive_count = 0;
+                for player in self.players:
+                    if not player.dead:
+                        alive_count += 1;
+
+                if alive_count <= 1:
+                    print("Game Over!");
+                    break;
 
                 #loop trough a list of players (sorted in order of resources descending)
                 self.players = sorted(self.players, key=lambda player: player.resources, reverse=True);
@@ -147,15 +163,7 @@ class WorldGame:
                     if player.dead_check() or opponent.dead_check():
                         self.__build_neighbors__(self.players);
 
-
-                build_trigger = False;
-                for player in self.players:
-                    if player.dead_check():
-                        build_trigger = True;
-                
-                if build_trigger:
-                    self.__build_neighbors__(self.players);
-
+                self.__build_neighbors__(self.players);
                 update_game_timer = game_tick;
 
     def __set_color_from_action__(self, player: Player, action: np.ndarray):

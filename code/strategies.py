@@ -9,7 +9,7 @@ class AbstractStrategy:
 class NashStrategy(AbstractStrategy):
     def get_action(self, game: nash.Game, playerI: int, prev_action: np.ndarray) -> np.ndarray:
         equilibria = game.support_enumeration();
-        eq_sum = np.array([[1/10,1/10,1/10],[1/10,1/10,1/10]]) #default probabilities, 0 will give error....
+        eq_sum = np.array([[1/100,1/100,1/100],[1/100,1/100,1/100]]) #default probabilities, 0 will give error....
         for eq in equilibria:
             eq_sum[0] = eq_sum[0] + eq[0]; #sum all nash equilibria
             eq_sum[1] = eq_sum[1] + eq[1];
