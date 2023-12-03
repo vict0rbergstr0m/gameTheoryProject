@@ -1,7 +1,8 @@
 {
     "python.analysis.typeCheckingMode": "basic",
     "cSpell.words": [
-        "pygame"
+        "pygame",
+        "strat"
     ],
     "python.analysis.autoImportCompletions": false
 }

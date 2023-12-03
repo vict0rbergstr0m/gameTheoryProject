@@ -19,7 +19,7 @@ TRADE_COLOR = (217,202,179);
 
 dead_value = 5;
 
-font_size = 32
+font_size = 16
 
 game_tick = 0.5;
 fps = 60;
@@ -57,12 +57,13 @@ class WorldGame:
         self.font = pygame.font.Font(None, font_size);
     
         self.players: list[Player] = [];
+
+        possible_strategies = [HarvestStrategy, RaidStrategy, TradeStrategy, NashStrategy];
+
         for i in range(n_players):
             position = (np.random.randint(0, self.WIDTH), np.random.randint(0, self.HEIGHT));
-            if i%2==0:
-                self.players.append(Player(PLAYER_COLOR, np.random.randint(min_resources, max_resources), position, HarvestStrategy()));
-            else:
-                self.players.append(Player(PLAYER_COLOR, np.random.randint(min_resources, max_resources), position, NashStrategy()));
+            strat = possible_strategies[np.random.randint(0, len(possible_strategies))];
+            self.players.append(Player(PLAYER_COLOR, np.random.randint(min_resources, max_resources), position, strat()));
     
         self.__build_neighbors__(self.players);
 
@@ -183,9 +184,11 @@ class WorldGame:
 
     def __draw_player__(self, player: Player):
         pygame.draw.circle(self.screen, player.color, (player.position[0], player.position[1]), np.sqrt(player.resources)/2+4);
+        text = self.font.render(player.strategy.__class__.__name__, True, player.color)  # Render the text
+        text_rect = text.get_rect(center=(player.position[0], player.position[1] - 20))  # Set the position of the text
+        self.screen.blit(text, text_rect)  # Draw the text on the screen
 
     def __draw_paths__(self, player: Player):
-
         start_pos = player.position;
         for neighbor in player.neighbors:
             end_pos = neighbor.position;
