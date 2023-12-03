@@ -2,10 +2,16 @@ import numpy as np
 import pygame
 import sys
 from strategies import *
+from game import *
+
+harvest_factor = 0.4;
+raid_factor = 0.8;
+max_raid_value = 2;
+raid_cost = 0.2;
+trade_factor = 0.6;
 
 BACKGROUND_COLOR = (3,15,19);
 PLAYER_COLOR = (79,109,122);
-
 
 RAID_COLOR = (144,50,61);
 HARVEST_COLOR = (194,128,52);
@@ -13,16 +19,17 @@ TRADE_COLOR = (217,202,179);
 
 font_size = 32
 
-game_tick = 0.1;
+game_tick = 0.5;
 fps = 60;
 
 class Player:
     def __init__(self, color, resources, position: tuple[float,float], strategy) -> None:
-        self.color = color
-        self.resources = resources
-        self.position = position
-        self.strategy = strategy
-        self.neighbors = []
+        self.color = color;
+        self.resources = resources;
+        self.position = position;
+        self.strategy = strategy;
+        self.neighbors = [];
+        self.dead = False;
 
 class WorldGame:
     """
@@ -41,7 +48,7 @@ class WorldGame:
     
         self.font = pygame.font.Font(None, font_size);
     
-        self.players = [];
+        self.players: list[Player] = [];
         for _ in range(n_players):
             position = (np.random.randint(0, self.WIDTH), np.random.randint(0, self.HEIGHT));
             self.players.append(Player(PLAYER_COLOR, np.random.randint(min_resources, max_resources), position, NashStrategy()));
@@ -99,10 +106,37 @@ class WorldGame:
 
             if update_game_timer <= 0:
 
-                #TODO: loop trough a list of players (sorted in order of resources descending)
-                #TODO: the players will each get one turn to play a round against (one or all) neighbors?
+                #loop trough a list of players (sorted in order of resources descending)
+                self.players = sorted(self.players, key=lambda player: player.resources);
+                #the players will each get one turn to play a round against (one or all) neighbors?
+                for player in self.players:
+                    #set up a single round game
+                    opponent = player.neighbors[np.random.randint(0, len(player.neighbors))];
+                    game = Game(harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, player.resources, opponent.resources, [player.strategy, opponent.strategy]);
+                    (game_round, _) = game.get_round();
+                    actions = game.run(game_round);
+
+                    player.resources = game.resources[0];
+                    opponent.resources = game.resources[1];
+
+                    self.__set_color_from_action__(player, actions[0]);
+                    self.__set_color_from_action__(opponent, actions[1]);
+
+                    
+
+                #todo: if player to small, remove them
+
+
 
                 update_game_timer = game_tick;
+
+    def __set_color_from_action__(self, player: Player, action: np.ndarray):
+        if action == 0:
+            player.color = HARVEST_COLOR
+        elif action == 1:
+            player.color = RAID_COLOR
+        elif action == 2:
+            player.color = TRADE_COLOR
 
     def __draw_players__(self, players: list[Player]):
         for player in players:
