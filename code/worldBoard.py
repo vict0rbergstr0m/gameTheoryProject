@@ -146,7 +146,7 @@ class WorldGame:
             self.__draw_player__(player)
 
     def __draw_player__(self, player: Player):
-        pygame.draw.circle(self.screen, player.color, (player.position[0], player.position[1]), np.sqrt(player.resources)/2);
+        pygame.draw.circle(self.screen, player.color, (player.position[0], player.position[1]), np.sqrt(player.resources)/2+4);
 
     def __draw_paths__(self, player: Player):
 
