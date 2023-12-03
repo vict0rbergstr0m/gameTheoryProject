@@ -3,6 +3,7 @@ import sys
 import numpy as np
 from game import *
 from strategies import *
+import matplotlib.pyplot as plt
 
 BACKGROUND_COLOR = (3,15,19);
 BOARD_COLOR = (79,109,122);
@@ -16,9 +17,10 @@ square_spacing = 96;
 
 font_size = 32
 
-game_tick = 0.5;
+game_tick = 0.1;
 fps = 60;
 
+plot_ever_n_rounds = 20;
 
 class GameRunner:
     def __init__(self) -> None:
@@ -34,13 +36,15 @@ class GameRunner:
 
     def run(self):
 
-        strategies = [NashStrategy(), NashStrategy()];
+        strategies = [NashStrategy(), HarvestStrategy()];
 
-        village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 100, 100, strategies);
+        village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 10000, 10000, strategies);
         update_game_timer = game_tick;
 
         (game, resources) = village_game.get_round();
         prev_action = village_game.run(game);
+
+        plot_round = plot_ever_n_rounds;
 
         while True:
             for event in pygame.event.get():
@@ -59,9 +63,25 @@ class GameRunner:
             update_game_timer -= 1/fps;
 
             if update_game_timer <= 0:
+
+                if(plot_round == 0):
+                    self.__plot_history__(village_game.resources_history, village_game);
+                    plot_round = plot_ever_n_rounds;
+
                 (game, resources) = village_game.get_round();
                 prev_action = village_game.run(game);
                 update_game_timer = game_tick;
+                plot_round -= 1;
+
+    def __plot_history__(self, resources_history: np.ndarray, village_game: Game):
+        plot_round = plot_ever_n_rounds;
+
+        resources_history = village_game.resources_history;
+
+        plt.plot(resources_history[:,0]);
+        plt.plot(resources_history[:,1]);
+
+        plt.show();
 
     def __plot_matchup__(self, utilities: list[np.ndarray], resources: np.ndarray, action: list[np.ndarray]):
 
