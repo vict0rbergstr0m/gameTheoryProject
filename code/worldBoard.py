@@ -17,9 +17,11 @@ RAID_COLOR = (144,50,61);
 HARVEST_COLOR = (194,128,52);
 TRADE_COLOR = (217,202,179);
 
+dead_value = 5;
+
 font_size = 32
 
-game_tick = 0.5;
+game_tick = 0.0;
 fps = 60;
 
 class Player:
@@ -30,6 +32,12 @@ class Player:
         self.strategy = strategy;
         self.neighbors = [];
         self.dead = False;
+
+    def dead_check(self) -> bool:
+        if self.resources <= dead_value:
+            self.dead = True;
+            self.color = (0,0,0);
+        return self.dead;
 
 class WorldGame:
     """
@@ -66,9 +74,12 @@ class WorldGame:
             player.neighbors = [];
 
         for player1 in players:
+            if player1.dead:
+                continue;
+
             closest_neighbor: tuple[float, Player] = (np.inf, players[0]);
             for player2 in players:
-                if player1 == player2 or player1.neighbors.__contains__(player2):
+                if player1 == player2 or player1.neighbors.__contains__(player2) or player2.dead:
                     continue;
 
                 if self.__get_distance__(player1, player2) <= self.always_neighbors_distance:
@@ -110,8 +121,18 @@ class WorldGame:
                 self.players = sorted(self.players, key=lambda player: player.resources);
                 #the players will each get one turn to play a round against (one or all) neighbors?
                 for player in self.players:
+                    if player.dead:
+                        continue;
+
                     #set up a single round game
                     opponent = player.neighbors[np.random.randint(0, len(player.neighbors))];
+                    if opponent.dead:
+                        for neighbor in player.neighbors:
+                            if not neighbor.dead:
+                                opponent = neighbor;
+                                break;
+
+
                     game = Game(harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, player.resources, opponent.resources, [player.strategy, opponent.strategy]);
                     (game_round, _) = game.get_round();
                     actions = game.run(game_round);
@@ -123,10 +144,17 @@ class WorldGame:
                     self.__set_color_from_action__(opponent, actions[1]);
 
                     
+                    if player.dead_check() or opponent.dead_check():
+                        self.__build_neighbors__(self.players);
 
-                #todo: if player to small, remove them
 
-
+                build_trigger = False;
+                for player in self.players:
+                    if player.dead_check():
+                        build_trigger = True;
+                
+                if build_trigger:
+                    self.__build_neighbors__(self.players);
 
                 update_game_timer = game_tick;
 
