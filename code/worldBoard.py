@@ -35,7 +35,7 @@ class WorldGame:
     """
     keep track of all players, their resources, and locations.
     """
-    def __init__(self, n_players, min_resources, max_resources, always_neighbors_distance = 10) -> None:
+    def __init__(self, n_players, min_resources, max_resources, always_neighbors_distance = 200) -> None:
         self.always_neighbors_distance = always_neighbors_distance;
 
         pygame.init();
