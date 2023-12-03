@@ -25,15 +25,18 @@ class NashStrategy(AbstractStrategy):
 
 class HarvestStrategy(AbstractStrategy):
     def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
-        return np.array([0]);
+        actions = np.array([0,0]);
+        return actions[0];
 
 class RaidStrategy(AbstractStrategy):
     def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
-        return np.array([1]);
+        actions = np.array([1,0]);
+        return actions[0];
 
 class TradeStrategy(AbstractStrategy):
     def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
-        return np.array([2]);
+        actions = np.array([2,0]);
+        return actions[0];
 
 class PacifistStrategy(AbstractStrategy):
     def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
