@@ -99,7 +99,8 @@ class WorldGame:
 
             if update_game_timer <= 0:
 
-
+                #TODO: loop trough a list of players (sorted in order of resources descending)
+                #TODO: the players will each get one turn to play a round against (one or all) neighbors?
 
                 update_game_timer = game_tick;
 
