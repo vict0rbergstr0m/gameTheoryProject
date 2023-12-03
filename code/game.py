@@ -22,8 +22,8 @@ class Game:
         return (self.get_game(self.resources), self.resources)
 
     def run(self, game) -> list[np.ndarray]:
-        actions = [self.strategies[0].get_action(game, 0,self.prev_actions),
-                    self.strategies[1].get_action(game, 1,self.prev_actions)];
+        actions = [self.strategies[0].get_action(game,self.prev_actions),
+                    self.strategies[1].get_action(game,self.prev_actions)];
 
         utility = np.array([game.payoff_matrices[0][actions[0],actions[1]],game.payoff_matrices[1][actions[0],actions[1]]]);
 
@@ -31,8 +31,8 @@ class Game:
 
         self.resources = self.resources + utility
 
-        print("\nplayer 1 played: " + str(actions[0]));
-        print("player 2 played: " + str(actions[1]));
+        print("\n" + self.strategies[0].__class__.__name__+  " 1 played: " + str(actions[0]));
+        print(self.strategies[0].__class__.__name__+  " 2 played: " + str(actions[1]));
         print("\n\n\n");
 
         self.prev_actions = actions.copy()

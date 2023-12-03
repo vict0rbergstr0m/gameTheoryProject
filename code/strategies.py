@@ -2,12 +2,12 @@ import numpy as np
 import nashpy as nash
 
 class AbstractStrategy:
-    def get_action(self, game: nash.Game, playerI: int, prev_action: np.ndarray) -> np.ndarray:
+    def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
         raise NotImplementedError
 
 
 class NashStrategy(AbstractStrategy):
-    def get_action(self, game: nash.Game, playerI: int, prev_action: np.ndarray) -> np.ndarray:
+    def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
         equilibria = game.support_enumeration();
         eq_sum = np.array([[1/100,1/100,1/100],[1/100,1/100,1/100]]) #default probabilities, 0 will give error....
         for eq in equilibria:
@@ -21,25 +21,22 @@ class NashStrategy(AbstractStrategy):
                     np.random.choice(available_actions, p=eq_sum[1])]; # 0 = harvest, 1 = raid, 2 = trade
 
         print(prev_action)
-        return actions[playerI];
+        return actions[0];
 
 class HarvestStrategy(AbstractStrategy):
-    def get_action(self, game: nash.Game, playerI: int, prev_action: np.ndarray) -> np.ndarray:
-        actions = np.array([0,0]);
-        return actions[playerI];
+    def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
+        return np.array([0]);
 
 class RaidStrategy(AbstractStrategy):
-    def get_action(self, game: nash.Game, playerI: int, prev_action: np.ndarray) -> np.ndarray:
-        actions = np.array([1,0]);
-        return actions[playerI];
+    def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
+        return np.array([1]);
 
 class TradeStrategy(AbstractStrategy):
-    def get_action(self, game: nash.Game, playerI: int, prev_action: np.ndarray) -> np.ndarray:
-        actions = np.array([2,0]);
-        return actions[playerI];
+    def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
+        return np.array([2]);
 
 class PacifistStrategy(AbstractStrategy):
-    def get_action(self, game: nash.Game, playerI: int, prev_action: np.ndarray) -> np.ndarray:
+    def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
         equilibria = game.support_enumeration();
         eq_sum = np.array([[1/100,1/100,1/100],[1/100,1/100,1/100]]) #default probabilities, 0 will give error....
         for eq in equilibria:
@@ -57,4 +54,4 @@ class PacifistStrategy(AbstractStrategy):
                     np.random.choice(available_actions, p=eq_sum[1])]; # 0 = harvest, 1 = raid, 2 = trade
 
         print(prev_action)
-        return actions[playerI];
+        return actions[0];
