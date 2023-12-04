@@ -11,6 +11,9 @@ BOARD_COLOR = (79,109,122);
 RAID_COLOR = (144,50,61);
 HARVEST_COLOR = (194,128,52);
 TRADE_COLOR = (217,202,179);
+NASH_COLOR = (0, 160, 30);
+
+mixed_Nash_Flag = False;
 
 square_size = 84;
 square_spacing = 96;
@@ -35,7 +38,7 @@ class GameRunner:
         self.font = pygame.font.Font(None, font_size);
 
     def run(self):
-
+        global mixed_Nash_Flag
         strategies = [NashStrategy(), HarvestStrategy()];
 
         village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 10000, 10000, strategies);
@@ -47,11 +50,7 @@ class GameRunner:
         plot_round = plot_ever_n_rounds;
 
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit();
-                    sys.exit();
-
+            
             utilities = [game.payoff_matrices[0], game.payoff_matrices[1]];
 
             self.screen.fill(BACKGROUND_COLOR);
@@ -61,8 +60,17 @@ class GameRunner:
 
             pygame.time.Clock().tick(fps);
             update_game_timer -= 1/fps;
+            
+            for event in pygame.event.get(): #Moved event handler to be after plot_matchup for mixed nash pause thing
+                if event.type == pygame.QUIT:
+                    pygame.quit();
+                    sys.exit();
 
-            if update_game_timer <= 0:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        mixed_Nash_Flag = False;
+                        
+            if update_game_timer <= 0 and mixed_Nash_Flag == False:
 
                 if(plot_round == 0):
                     self.__plot_history__(village_game.resources_history, village_game);
@@ -84,6 +92,7 @@ class GameRunner:
         plt.show();
 
     def __plot_matchup__(self, utilities: list[np.ndarray], resources: np.ndarray, action: list[np.ndarray]):
+        global mixed_Nash_Flag;
 
         board0_corner = np.array([128,128]);
         board1_corner = np.array([square_spacing*6 + 128,128]);
@@ -101,7 +110,28 @@ class GameRunner:
         number_rect = number_text.get_rect(center=board1_corner + np.array([64, -64]));
         self.screen.blit(number_text, number_rect);
     
-
+         #Draw Nash
+        
+        game = nash.Game(utilities[0],utilities[1])
+        print(game)
+        equilibria = game.support_enumeration();
+        for count,eq in enumerate(equilibria):
+            print(eq)
+            if any(eq[0]==1): # type: ignore
+                i = eq[0].tolist().index(1); # type: ignore
+                j = eq[1].tolist().index(1); # type: ignore
+                circ_pos1= (board0_corner[0]+square_size/2 + square_spacing*(i), board0_corner[1]+square_size/2+square_spacing*(j));
+                pygame.draw.circle(self.screen, NASH_COLOR,circ_pos1,square_size*2/(3*np.sqrt(2)),4)
+                circ_pos2= (board1_corner[0]+square_size/2 + square_spacing*(i), board1_corner[1]+square_size/2+square_spacing*(j));
+                pygame.draw.circle(self.screen, NASH_COLOR,circ_pos2,square_size*2/(3*np.sqrt(2)),4)
+                eq_text = self.font.render('Nash: ' + str(eq),True,(255, 255, 255));
+                eq_rect = eq_text.get_rect(center=board0_corner+square_spacing*7/2+np.array([0, 30])*count);
+                self.screen.blit(eq_text, eq_rect);
+            else:
+                eq_text = self.font.render('Nash: ' + str(eq),True,(255, 255, 255));
+                eq_rect = eq_text.get_rect(center=board0_corner+square_spacing*7/2+np.array([0, 30])*count);
+                self.screen.blit(eq_text, eq_rect);
+                mixed_Nash_Flag = True;
         #draw action names
 
         # player 1

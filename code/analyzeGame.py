@@ -146,15 +146,23 @@ class GameAnalyzer:
         game = nash.Game(utilities[0],utilities[1])
         print(game)
         equilibria = game.support_enumeration();
-        for eq in equilibria:
+        for count,eq in enumerate(equilibria):
             print(eq)
-            i = eq[0].tolist().index(1);
-            j = eq[1].tolist().index(1);
-            circ_pos1= (board0_corner[0]+square_size/2 + square_spacing*(i), board0_corner[1]+square_size/2+square_spacing*(j));
-            pygame.draw.circle(self.screen, NASH_COLOR,circ_pos1,square_size*2/(3*np.sqrt(2)),4)
-            circ_pos2= (board1_corner[0]+square_size/2 + square_spacing*(i), board1_corner[1]+square_size/2+square_spacing*(j));
-            pygame.draw.circle(self.screen, NASH_COLOR,circ_pos2,square_size*2/(3*np.sqrt(2)),4)
-        
+            if any(eq[0]==1): # type: ignore
+                i = eq[0].tolist().index(1); # type: ignore
+                j = eq[1].tolist().index(1); # type: ignore
+                circ_pos1= (board0_corner[0]+square_size/2 + square_spacing*(i), board0_corner[1]+square_size/2+square_spacing*(j));
+                pygame.draw.circle(self.screen, NASH_COLOR,circ_pos1,square_size*2/(3*np.sqrt(2)),4)
+                circ_pos2= (board1_corner[0]+square_size/2 + square_spacing*(i), board1_corner[1]+square_size/2+square_spacing*(j));
+                pygame.draw.circle(self.screen, NASH_COLOR,circ_pos2,square_size*2/(3*np.sqrt(2)),4)
+                eq_text = self.font.render('Nash: ' + str(eq),True,(255, 255, 255));
+                eq_rect = eq_text.get_rect(center=board0_corner+square_spacing*7/2+np.array([0, 30])*count);
+                self.screen.blit(eq_text, eq_rect);
+            else:
+                eq_text = self.font.render('Nash: ' + str(eq),True,(255, 255, 255));
+                eq_rect = eq_text.get_rect(center=board0_corner+square_spacing*7/2+np.array([0, 30])*count);
+                self.screen.blit(eq_text, eq_rect);
+
         
         #draw action names
         
