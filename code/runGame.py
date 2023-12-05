@@ -20,10 +20,10 @@ square_spacing = 96;
 
 font_size = 32
 
-game_tick = 0.1;
+game_tick = 0.5;
 fps = 60;
 
-plot_ever_n_rounds = 20;
+plot_ever_n_rounds = 100;
 
 class GameRunner:
     def __init__(self) -> None:
@@ -38,7 +38,9 @@ class GameRunner:
         self.font = pygame.font.Font(None, font_size);
 
     def run(self):
-        global mixed_Nash_Flag
+        global mixed_Nash_Flag;
+        pause_on_nash = False;
+
         strategies = [NashStrategy(), HarvestStrategy()];
 
         village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 10000, 10000, strategies);
@@ -54,7 +56,7 @@ class GameRunner:
             utilities = [game.payoff_matrices[0], game.payoff_matrices[1]];
 
             self.screen.fill(BACKGROUND_COLOR);
-            self.__plot_matchup__(utilities, resources, prev_action);
+            self.__plot_matchup__(utilities, resources, prev_action, [strategies[0].__class__.__name__, strategies[1].__class__.__name__]);
 
             pygame.display.flip();
 
@@ -67,11 +69,10 @@ class GameRunner:
                     sys.exit();
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_SPACE and pause_on_nash:
                         mixed_Nash_Flag = False;
                         
-            if update_game_timer <= 0 and mixed_Nash_Flag == False:
-
+            if update_game_timer <= 0:
                 if(plot_round == 0):
                     self.__plot_history__(village_game.resources_history, village_game);
                     plot_round = plot_ever_n_rounds;
@@ -80,6 +81,10 @@ class GameRunner:
                 prev_action = village_game.run(game);
                 update_game_timer = game_tick;
                 plot_round -= 1;
+    
+                if resources[0] <= 1 or resources[1] <= 1:
+                    print("Game Over");
+                    update_game_timer = 99;
 
     def __plot_history__(self, resources_history: np.ndarray, village_game: Game):
         plot_round = plot_ever_n_rounds;
@@ -91,7 +96,7 @@ class GameRunner:
 
         plt.show();
 
-    def __plot_matchup__(self, utilities: list[np.ndarray], resources: np.ndarray, action: list[np.ndarray]):
+    def __plot_matchup__(self, utilities: list[np.ndarray], resources: np.ndarray, action: list[np.ndarray], player_names: list[str] = ['Player 0', 'Player 1']):
         global mixed_Nash_Flag;
 
         board0_corner = np.array([128,128]);
@@ -101,16 +106,26 @@ class GameRunner:
         self.__draw_board__(board1_corner, utilities[1], action);
     
 
+        #draw player strategies
+        number_text = self.font.render(player_names[0], True, (255, 255, 255));
+        number_rect = number_text.get_rect(center=board0_corner + np.array([96, -96]));
+        self.screen.blit(number_text, number_rect);
+    
+        number_text = self.font.render(player_names[1], True, (255, 255, 255));
+        number_rect = number_text.get_rect(center=board1_corner + np.array([96, -96]));
+        self.screen.blit(number_text, number_rect);
+
+
         #draw player resources
         number_text = self.font.render('Resources: '+str(resources[0]), True, (255, 255, 255));
-        number_rect = number_text.get_rect(center=board0_corner + np.array([64, -64]));
+        number_rect = number_text.get_rect(center=board0_corner + np.array([96, -64]));
         self.screen.blit(number_text, number_rect);
     
         number_text = self.font.render('Resources: '+str(resources[1]), True, (255, 255, 255));
-        number_rect = number_text.get_rect(center=board1_corner + np.array([64, -64]));
+        number_rect = number_text.get_rect(center=board1_corner + np.array([96, -64]));
         self.screen.blit(number_text, number_rect);
     
-         #Draw Nash
+        #Draw Nash
         
         game = nash.Game(utilities[0],utilities[1])
         print(game)
