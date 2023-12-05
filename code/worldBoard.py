@@ -59,6 +59,7 @@ class WorldGame:
         self.players: list[Player] = [];
 
         possible_strategies = [HarvestStrategy, RaidStrategy, TradeStrategy, NashStrategy, PacifistStrategy, GreedyStrategy];
+        # possible_strategies = [HarvestStrategy, NashStrategy, PacifistStrategy]; #more interesting
         #possible_strategies = [HarvestStrategy];
 
         for i in range(n_players):
