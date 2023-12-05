@@ -73,6 +73,7 @@ class GameRunner:
                         mixed_Nash_Flag = False;
                         
             if update_game_timer <= 0:
+
                 if(plot_round == 0):
                     self.__plot_history__(village_game.resources_history, village_game);
                     plot_round = plot_ever_n_rounds;
@@ -84,7 +85,7 @@ class GameRunner:
     
                 if resources[0] <= 1 or resources[1] <= 1:
                     print("Game Over");
-                    update_game_timer = 99;
+                    plot_round = 0;
 
     def __plot_history__(self, resources_history: np.ndarray, village_game: Game):
         plot_round = plot_ever_n_rounds;
