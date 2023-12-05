@@ -10,7 +10,7 @@ max_raid_value = 2;
 raid_cost = 0.2;
 trade_factor = 0.6;
 
-BACKGROUND_COLOR = (3,15,19);
+BACKGROUND_COLOR = (6,30,38);
 PLAYER_COLOR = (79,109,122);
 
 RAID_COLOR = (144,50,61);
