@@ -40,7 +40,8 @@ class GameAnalyzer:
         # strategies = [PacifistStrategy(), HarvestStrategy()];
         strategies = [PacifistStrategy(), PacifistStrategy()];
         # strategies = [NashStrategy(), NashStrategy()];
-        
+        strategies = [GreedyStrategy(), GreedyStrategy()];
+
         village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 100, 100, strategies);
         update_game_timer = game_tick;
 

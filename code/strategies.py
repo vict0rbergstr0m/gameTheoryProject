@@ -5,7 +5,6 @@ class AbstractStrategy:
     def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
         raise NotImplementedError
 
-
 class NashStrategy(AbstractStrategy):
     def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
         equilibria = game.support_enumeration();
@@ -57,4 +56,19 @@ class PacifistStrategy(AbstractStrategy):
                     0]; # 0 = harvest, 1 = raid, 2 = trade
 
         print(prev_action)
+        return actions[0];
+
+
+class GreedyStrategy(AbstractStrategy):
+    def get_action(self, game: nash.Game, prev_action: np.ndarray) -> np.ndarray:
+        matrix = game.payoff_matrices[0];
+        
+        actions = np.array([0,0]);
+        biggest = 0;
+        for i in range(0,3):
+            for j in range(0,3):
+                if matrix[i][j] > biggest:
+                    biggest = matrix[i][j];
+                    actions = np.array([i,j]);
+
         return actions[0];

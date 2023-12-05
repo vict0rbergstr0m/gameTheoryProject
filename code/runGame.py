@@ -42,8 +42,8 @@ class GameRunner:
         pause_on_nash = False;
 
         # strategies = [NashStrategy(), HarvestStrategy()];
-        # strategies = [NashStrategy(), RaidStrategy()];
-        strategies = [NashStrategy(), PacifistStrategy()];
+        strategies = [NashStrategy(), RaidStrategy()];
+        # strategies = [NashStrategy(), PacifistStrategy()];
         # strategies = [PacifistStrategy(), HarvestStrategy()];
         # strategies = [PacifistStrategy(), PacifistStrategy()];
         # strategies = [NashStrategy(), NashStrategy()];
