@@ -33,8 +33,17 @@ class GameAnalyzer:
         self.font = pygame.font.Font(None, font_size)
 
     def run(self):
-        village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 100, 100);
+
+        # strategies = [NashStrategy(), HarvestStrategy()];
+        # strategies = [NashStrategy(), RaidStrategy()];
+        # strategies = [NashStrategy(), PacifistStrategy()];
+        # strategies = [PacifistStrategy(), HarvestStrategy()];
+        strategies = [PacifistStrategy(), PacifistStrategy()];
+        # strategies = [NashStrategy(), NashStrategy()];
+        
+        village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 100, 100, strategies);
         update_game_timer = game_tick;
+
 
         (game, resources) = village_game.get_round();
         prev_action = village_game.run(game);

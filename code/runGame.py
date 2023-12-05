@@ -41,7 +41,12 @@ class GameRunner:
         global mixed_Nash_Flag;
         pause_on_nash = False;
 
-        strategies = [NashStrategy(), HarvestStrategy()];
+        # strategies = [NashStrategy(), HarvestStrategy()];
+        # strategies = [NashStrategy(), RaidStrategy()];
+        strategies = [NashStrategy(), PacifistStrategy()];
+        # strategies = [PacifistStrategy(), HarvestStrategy()];
+        # strategies = [PacifistStrategy(), PacifistStrategy()];
+        # strategies = [NashStrategy(), NashStrategy()];
 
         village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 10000, 10000, strategies);
         update_game_timer = game_tick;

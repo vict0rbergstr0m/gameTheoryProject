@@ -48,7 +48,7 @@ class WorldGame:
 
         pygame.init();
 
-        self.WIDTH, self.HEIGHT = 1440, 1440;
+        self.WIDTH, self.HEIGHT = 1280, 720;
 
         # Create the Pygame screen
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT));
@@ -132,38 +132,39 @@ class WorldGame:
                         alive_count += 1;
 
                 if alive_count <= 1:
+                    update_game_timer = 99;
                     print("Game Over!");
-                    break;
+                    # break;
+                else:
+                    #loop trough a list of players (sorted in order of resources descending)
+                    self.players = sorted(self.players, key=lambda player: player.resources, reverse=True);
+                    #the players will each get one turn to play a round against (one or all) neighbors?
+                    for player in self.players:
+                        if player.dead:
+                            continue;
 
-                #loop trough a list of players (sorted in order of resources descending)
-                self.players = sorted(self.players, key=lambda player: player.resources, reverse=True);
-                #the players will each get one turn to play a round against (one or all) neighbors?
-                for player in self.players:
-                    if player.dead:
-                        continue;
+                        #set up a single round game
+                        player.neighbors = sorted(player.neighbors, key=lambda neighbor: neighbor.resources, reverse=True);
+                        opponent = player.neighbors[np.random.randint(0, len(player.neighbors))];
+                        if opponent.dead:
+                            for neighbor in player.neighbors:
+                                if not neighbor.dead:
+                                    opponent = neighbor;
+                                    break;
 
-                    #set up a single round game
-                    player.neighbors = sorted(player.neighbors, key=lambda neighbor: neighbor.resources, reverse=True);
-                    opponent = player.neighbors[np.random.randint(0, len(player.neighbors))];
-                    if opponent.dead:
-                        for neighbor in player.neighbors:
-                            if not neighbor.dead:
-                                opponent = neighbor;
-                                break;
+                        game = Game(harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, player.resources, opponent.resources, [player.strategy, opponent.strategy]);
+                        (game_round, _) = game.get_round();
+                        actions = game.run(game_round);
 
-                    game = Game(harvest_factor, raid_factor, max_raid_value, raid_cost, trade_factor, player.resources, opponent.resources, [player.strategy, opponent.strategy]);
-                    (game_round, _) = game.get_round();
-                    actions = game.run(game_round);
+                        player.resources = game.resources[0];
+                        opponent.resources = game.resources[1];
 
-                    player.resources = game.resources[0];
-                    opponent.resources = game.resources[1];
+                        self.__set_color_from_action__(player, actions[0]);
+                        self.__set_color_from_action__(opponent, actions[1]);
 
-                    self.__set_color_from_action__(player, actions[0]);
-                    self.__set_color_from_action__(opponent, actions[1]);
-
-                    
-                    if player.dead_check() or opponent.dead_check():
-                        self.__build_neighbors__(self.players);
+                        
+                        if player.dead_check() or opponent.dead_check():
+                            self.__build_neighbors__(self.players);
 
                 self.__build_neighbors__(self.players);
                 update_game_timer = game_tick;
@@ -201,5 +202,5 @@ class WorldGame:
             pygame.draw.line(self.screen, TRADE_COLOR, start_pos, end_pos, 5);
 
 if __name__ == "__main__":
-    game = WorldGame(100, 250, 1000);
+    game = WorldGame(50, 250, 1000);
     game.run()
