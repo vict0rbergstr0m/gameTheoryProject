@@ -59,7 +59,7 @@ class WorldGame:
         self.players: list[Player] = [];
 
         possible_strategies = [HarvestStrategy, RaidStrategy, TradeStrategy, NashStrategy, PacifistStrategy, GreedyStrategy];
-        # possible_strategies = [HarvestStrategy, NashStrategy, PacifistStrategy]; #more interesting
+        # possible_strategies = [HarvestStrategy, NashStrategy, PacifistStrategy];
         #possible_strategies = [HarvestStrategy];
 
         for i in range(n_players):
@@ -203,5 +203,5 @@ class WorldGame:
             pygame.draw.line(self.screen, TRADE_COLOR, start_pos, end_pos, 5);
 
 if __name__ == "__main__":
-    game = WorldGame(50, 250, 1000);
+    game = WorldGame(30, 250, 1000);
     game.run()

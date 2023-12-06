@@ -20,7 +20,7 @@ square_spacing = 96;
 
 font_size = 32
 
-game_tick = 0.5;
+game_tick = 0.0;
 fps = 60;
 
 plot_ever_n_rounds = 100;
@@ -42,13 +42,13 @@ class GameRunner:
         pause_on_nash = False;
 
         # strategies = [NashStrategy(), HarvestStrategy()];
-        strategies = [NashStrategy(), RaidStrategy()];
+        # strategies = [NashStrategy(), RaidStrategy()];
         # strategies = [NashStrategy(), PacifistStrategy()];
         # strategies = [PacifistStrategy(), HarvestStrategy()];
         # strategies = [PacifistStrategy(), PacifistStrategy()];
-        # strategies = [NashStrategy(), NashStrategy()];
+        strategies = [NashStrategy(), NashStrategy()];
 
-        village_game = Game(0.4, 0.8, 2, 0.2, 0.6, 10000, 10000, strategies);
+        village_game = Game(0.4/10, 0.8/10, 2/10, 0.2/10, 0.6/10, 1000, 1000, strategies);
         update_game_timer = game_tick;
 
         (game, resources) = village_game.get_round();
@@ -80,7 +80,7 @@ class GameRunner:
             if update_game_timer <= 0:
 
                 if(plot_round == 0):
-                    self.__plot_history__(village_game.resources_history, village_game);
+                    self.__plot_history__(village_game.resources_history, village_game, strategies);
                     plot_round = plot_ever_n_rounds;
 
                 (game, resources) = village_game.get_round();
@@ -92,13 +92,15 @@ class GameRunner:
                     print("Game Over");
                     plot_round = 0;
 
-    def __plot_history__(self, resources_history: np.ndarray, village_game: Game):
+    def __plot_history__(self, resources_history: np.ndarray, village_game: Game, strategies):
         plot_round = plot_ever_n_rounds;
 
         resources_history = village_game.resources_history;
 
         plt.plot(resources_history[:,0]);
         plt.plot(resources_history[:,1]);
+
+        plt.legend([strategies[0].__class__.__name__, strategies[1].__class__.__name__]);
 
         plt.show();
 
