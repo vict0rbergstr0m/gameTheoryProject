@@ -21,7 +21,7 @@ dead_value = 5;
 
 font_size = 16
 
-game_tick = 0.0;
+game_tick = 0.1;
 fps = 60;
 
 class Player:
@@ -32,6 +32,7 @@ class Player:
         self.strategy = strategy;
         self.neighbors = [];
         self.dead = False;
+        self.splits = 1;
 
     def dead_check(self) -> bool:
         if self.resources <= dead_value:
@@ -43,7 +44,7 @@ class WorldGame:
     """
     keep track of all players, their resources, and locations.
     """
-    def __init__(self, n_players, min_resources, max_resources, always_neighbors_distance = 200) -> None:
+    def __init__(self, n_players, min_resources, max_resources, always_neighbors_distance = 200, split_at_resources = 5000) -> None:
         self.always_neighbors_distance = always_neighbors_distance;
 
         pygame.init();
@@ -68,6 +69,8 @@ class WorldGame:
             self.players.append(Player(PLAYER_COLOR, np.random.randint(min_resources, max_resources), position, strat()));
     
         self.__build_neighbors__(self.players);
+        self.update_edges = False;
+        self.split_at_resources = split_at_resources;
 
     def __build_neighbors__(self, players: list[Player]):
         """
@@ -141,7 +144,7 @@ class WorldGame:
                     self.players = sorted(self.players, key=lambda player: player.resources, reverse=True);
                     #the players will each get one turn to play a round against (one or all) neighbors?
                     for player in self.players:
-                        if player.dead:
+                        if player.dead_check():
                             continue;
 
                         #set up a single round game
@@ -163,11 +166,21 @@ class WorldGame:
                         self.__set_color_from_action__(player, actions[0]);
                         self.__set_color_from_action__(opponent, actions[1]);
 
-                        
                         if player.dead_check() or opponent.dead_check():
-                            self.__build_neighbors__(self.players);
+                            self.update_edges = True;
+                
+                        if self.split_at_resources > 0 and player.resources >= self.split_at_resources and player.splits > 0:#spawn new player if resources are high enough
+                            random_offset = (np.random.randint(-100, 100), np.random.randint(-100, 100));
+                            pos = (player.position[0] + random_offset[0], player.position[1] + random_offset[1]);
+                            player.resources *= 0.125; #reduce resources to 12.5% as cost for splitting
+                            self.players.append(Player(player.color, player.resources, pos, player.strategy)); #spawn new player and add to player list
+                            self.__build_neighbors__(self.players); #rebuild neighbors
+                            self.update_edges = True;
+                            player.splits -= 1; #update slipt count for player
 
-                self.__build_neighbors__(self.players);
+
+                if self.update_edges:
+                    self.__build_neighbors__(self.players);
                 update_game_timer = game_tick;
 
     def __set_color_from_action__(self, player: Player, action: np.ndarray):
@@ -203,5 +216,5 @@ class WorldGame:
             pygame.draw.line(self.screen, TRADE_COLOR, start_pos, end_pos, 5);
 
 if __name__ == "__main__":
-    game = WorldGame(30, 250, 1000);
+    game = WorldGame(10, 250, 1000, 200, 50000);
     game.run()
