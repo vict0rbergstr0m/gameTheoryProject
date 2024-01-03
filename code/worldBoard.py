@@ -21,7 +21,7 @@ dead_value = 5;
 
 font_size = 16
 
-game_tick = 0.1;
+game_tick = 0.0;
 fps = 60;
 
 class Player:
@@ -32,7 +32,7 @@ class Player:
         self.strategy = strategy;
         self.neighbors = [];
         self.dead = False;
-        self.splits = 1;
+        self.splits = 0;
 
     def dead_check(self) -> bool:
         if self.resources <= dead_value:
@@ -59,8 +59,10 @@ class WorldGame:
     
         self.players: list[Player] = [];
 
+        
         possible_strategies = [HarvestStrategy, RaidStrategy, TradeStrategy, NashStrategy, PacifistStrategy, GreedyStrategy];
-        # possible_strategies = [HarvestStrategy, NashStrategy, PacifistStrategy];
+        #possible_strategies = [RaidStrategy, NashStrategy, GreedyStrategy];
+        #possible_strategies = [HarvestStrategy, NashStrategy, PacifistStrategy];
         #possible_strategies = [HarvestStrategy];
 
         for i in range(n_players):
@@ -113,6 +115,7 @@ class WorldGame:
         return np.sqrt((player1.position[0] - player2.position[0])**2 + (player1.position[1] - player2.position[1])**2)
 
     def run(self):
+        round_num = 0;
         update_game_timer = game_tick;
         while True:
             for event in pygame.event.get():
@@ -140,6 +143,8 @@ class WorldGame:
                     print("Game Over!");
                     # break;
                 else:
+                    round_num += 1;
+                    pygame.display.set_caption("Village Game: round " + str(round_num));
                     #loop trough a list of players (sorted in order of resources descending)
                     self.players = sorted(self.players, key=lambda player: player.resources, reverse=True);
                     #the players will each get one turn to play a round against (one or all) neighbors?
@@ -172,7 +177,7 @@ class WorldGame:
                         if self.split_at_resources > 0 and player.resources >= self.split_at_resources and player.splits > 0:#spawn new player if resources are high enough
                             random_offset = (np.random.randint(-100, 100), np.random.randint(-100, 100));
                             pos = (player.position[0] + random_offset[0], player.position[1] + random_offset[1]);
-                            player.resources *= 0.125; #reduce resources to 12.5% as cost for splitting
+                            player.resources *= 0.25; #reduce resources to 12.5% as cost for splitting
                             self.players.append(Player(player.color, player.resources, pos, player.strategy)); #spawn new player and add to player list
                             self.__build_neighbors__(self.players); #rebuild neighbors
                             self.update_edges = True;
@@ -216,5 +221,5 @@ class WorldGame:
             pygame.draw.line(self.screen, TRADE_COLOR, start_pos, end_pos, 5);
 
 if __name__ == "__main__":
-    game = WorldGame(10, 250, 1000, 200, 50000);
+    game = WorldGame(100, 250, 1000, 200, 50000);
     game.run()
